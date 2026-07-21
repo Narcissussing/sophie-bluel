@@ -271,6 +271,12 @@ input[type="submit"] {
 	text-decoration: none;
 	font-size: 0.9em;
 }
+.message-erreur {
+	color: #B1663C;
+	font-size: 0.9em;
+	margin-top: -1em;
+	display: none;
+}
 
 footer nav {
     width: 100%;
