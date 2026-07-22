@@ -85,7 +85,7 @@ if (token) {
 }
 
 
-afficherGalerie(projets);
+afficherGalerie(projets)
 afficherGalerieModale(projets);
 
 // Creer "Tous" button
