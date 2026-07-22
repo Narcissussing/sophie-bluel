@@ -19,6 +19,12 @@ const lienConnexion = document.querySelector(".lien-connexion");
 const modale = document.querySelector("#modale");
 const btnFermerModale = document.querySelector(".fermer-modale");
 const modaleGalerie = document.querySelector(".modale-galerie");
+const select = document.getElementById("categorie");
+const btnAjouterPhoto = document.querySelector(".btn-ajouter-photo");
+const btnRetour = document.querySelector(".btn-retour");
+const vueGalerie = document.querySelector(".vue-galerie");
+const vueFormulaire = document.querySelector(".vue-formulaire");
+
 
 //FUNCTIONS
 function afficherGalerie(projetsAAfficher) {
@@ -62,11 +68,9 @@ function afficherGalerieModale(projetsAAfficher) {
 
 function changerBoutonActif(bouton) {
     const boutonActif = filtres.querySelector(".actif");
-
     if (boutonActif) {
         boutonActif.classList.remove("actif");
     }
-
     bouton.classList.add("actif");
 }
 
@@ -99,19 +103,32 @@ buttonFiltreTous.addEventListener("click", () => {
     afficherGalerie(projets);
 });
 
-// Creer categorie buttons
+// Placeholder
+const optionPlaceholder = document.createElement("option");
+optionPlaceholder.value = "";
+optionPlaceholder.textContent = "";
+optionPlaceholder.disabled = true;
+optionPlaceholder.selected = true;
+
+select.appendChild(optionPlaceholder);
+
+// Categories
 categories.forEach((categorie) => {
     const buttonFiltre = document.createElement("button");
+    const option = document.createElement("option");
+
     buttonFiltre.innerText = categorie.name;
     filtres.appendChild(buttonFiltre);
 
+    option.value = categorie.id;
+    option.textContent = categorie.name;
+    select.appendChild(option);
+
     buttonFiltre.addEventListener("click", () => {
         changerBoutonActif(buttonFiltre);
-
         const filtreCategorie = projets.filter(
             (projet) => projet.categoryId === categorie.id
         );
-
         afficherGalerie(filtreCategorie);
     });
 });
@@ -131,4 +148,12 @@ modale.addEventListener("click", (event) => {
     }
 });
 
+btnAjouterPhoto.addEventListener("click", () => {
+    vueGalerie.style.display = "none";
+    vueFormulaire.style.display = "flex";
+});
 
+btnRetour.addEventListener("click", () => {
+    vueFormulaire.style.display = "none";
+    vueGalerie.style.display = "block";
+});

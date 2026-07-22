@@ -279,6 +279,111 @@ li:hover {
   cursor: pointer;
 }
 
+.vue-formulaire {
+  display: none;
+  flex-direction: column;
+}
+
+.btn-retour {
+  position: absolute;
+  top: 26px;
+  left: 30px;
+  width: 24px;
+  height: 24px;
+  background: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: black;
+  padding: 0;
+}
+
+.zone-upload {
+  width: 100%;
+  height: 169px;
+  background-color: #e8f1f6;
+  border-radius: 3px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8em;
+  margin-bottom: 9px;
+  color: #b9c5cc;
+}
+
+.zone-upload svg {
+  width: 46px;
+  height: 40px;
+}
+
+.zone-upload .btn-choisir-photo {
+  background-color: #cbd6dc;
+  color: #306685;
+  border: none;
+  border-radius: 60px;
+  padding: 0.6em 1.2em;
+  font-family: "Work Sans";
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.zone-upload .upload-info {
+  font-size: 0.75em;
+  color: #444;
+}
+
+#form-ajout-photo {
+  display: flex;
+  flex-direction: column;
+}
+
+#form-ajout-photo label {
+  margin-bottom: 0.5em;
+  margin-top: 1.5em;
+}
+
+#form-ajout-photo input[type="text"],
+#form-ajout-photo select {
+  width: 100%;
+  height: 51px;
+  border: none;
+  border-radius: 4px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.09);
+  font-family: "Work Sans";
+  font-size: 14px;
+}
+
+#form-ajout-photo input[type="text"] {
+  padding: 0 16px;
+}
+
+#form-ajout-photo select {
+  padding: 0 48px 0 16px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: #fff url("./icons/fleche-bas.svg") no-repeat right 18px center;
+  background-size: 10px;
+  cursor: pointer;
+}
+
+
+
+.separateur-formulaire {
+  border: none;
+  border-top: 1px solid #b3b3b3;
+  width: 100%;
+  margin: 1.5em 0;
+}
+
+#form-ajout-photo input[type="submit"] {
+  margin-top: 0;
+  width: 237px;
+}
+
 .filtres {
   display: flex;
   justify-content: center;
@@ -428,9 +533,10 @@ input[type="submit"] {
   width: 630px;
   min-height: 688px;
   border-radius: 10px;
-  padding: 60px 105px;
+  padding: 60px 105px 45px 105px;
   position: relative;
 }
+
 .modale-contenu h3 {
   text-align: center;
   font-family: "Work Sans";
@@ -438,11 +544,13 @@ input[type="submit"] {
   font-weight: 400;
   margin-bottom: 46px;
 }
+
 .modale-galerie {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   column-gap: 9px;
   row-gap: 29px;
+  padding-bottom: 20px;
 }
 
 .modale-galerie figure {
@@ -455,11 +563,12 @@ input[type="submit"] {
   object-fit: cover;
   aspect-ratio: 3/4;
 }
+
 .modale-separateur {
   border: none;
   border-top: 1px solid #b3b3b3;
-  width: 430px;
-  margin: 66.3px auto 38px;
+  width: 100%;
+  margin: 47px 0 32px;
 }
 
 .btn-ajouter-photo {
@@ -497,6 +606,7 @@ input[type="submit"] {
   width: 9px;
   height: 11px;
 }
+
 .fermer-modale {
   position: absolute;
   top: 26px;
@@ -513,7 +623,6 @@ input[type="submit"] {
   font-size: 24px;
   line-height: 1;
 }
-
 footer {
   background: #fff;
   height: 60px;
