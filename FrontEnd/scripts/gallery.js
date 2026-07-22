@@ -4,6 +4,11 @@ const projets = await obtenirProjets();
 const categories = await obtenirCategories();
 const gallery = document.querySelector(".gallery");
 const filtres = document.querySelector(".filtres");
+const token = localStorage.getItem("token");
+const modeEdition = document.querySelector(".mode-edition");
+const btnModifier = document.querySelector(".btn-modifier");
+const filtresDiv = document.querySelector(".filtres");
+const lienConnexion = document.querySelector(".lien-connexion");
 
 //FUNCTIONS
 function afficherGalerie(projetsAAfficher) {
@@ -33,6 +38,20 @@ function changerBoutonActif(bouton) {
     }
 
     bouton.classList.add("actif");
+}
+
+if (token) {
+    modeEdition.style.display = "flex";
+    btnModifier.style.display = "flex";
+    filtresDiv.style.display = "none";
+    lienConnexion.textContent = "logout";
+    lienConnexion.href = "#";
+
+    lienConnexion.addEventListener("click", (event) => {
+        event.preventDefault();
+        localStorage.removeItem("token");
+        window.location.href = "index.html";
+    });
 }
 
 
