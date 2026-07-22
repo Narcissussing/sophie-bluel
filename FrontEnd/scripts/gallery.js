@@ -1,14 +1,23 @@
 import { obtenirProjets, obtenirCategories } from './api.js';
 
+//Recuperation des projets et categories depuis l'API
 const projets = await obtenirProjets();
 const categories = await obtenirCategories();
+
+//Recuperation du token pour le mode edition
+const token = localStorage.getItem("token");
+
+//Recuperation des elements du DOM
 const gallery = document.querySelector(".gallery");
 const filtres = document.querySelector(".filtres");
-const token = localStorage.getItem("token");
 const modeEdition = document.querySelector(".mode-edition");
 const btnModifier = document.querySelector(".btn-modifier");
 const filtresDiv = document.querySelector(".filtres");
 const lienConnexion = document.querySelector(".lien-connexion");
+
+//Modale
+const modale = document.querySelector("#modale");
+const btnFermerModale = document.querySelector(".fermer-modale");
 
 //FUNCTIONS
 function afficherGalerie(projetsAAfficher) {
@@ -84,3 +93,20 @@ categories.forEach((categorie) => {
         afficherGalerie(filtreCategorie);
     });
 });
+
+// 1.Le comportement de la modale 
+btnModifier.addEventListener("click", () => {
+    modale.style.display = "flex";
+});
+
+btnFermerModale.addEventListener("click", () => {
+    modale.style.display = "none";
+});
+
+modale.addEventListener("click", (event) => {
+    if (event.target === modale) {
+        modale.style.display = "none";
+    }
+});
+
+
