@@ -1,13 +1,11 @@
 import { obtenirProjets, obtenirCategories, supprimerProjet, ajouterProjet } from './api.js';
 
-//Projets et categories depuis l'API
+// ---------- DONNÉES ----------
 let projets = await obtenirProjets();
 const categories = await obtenirCategories();
-
-//Recuperation du token pour le mode edition
 const token = localStorage.getItem("token");
 
-//Elements du DOM
+// ---------- DOM : PAGE PRINCIPALE ----------
 const galerie = document.querySelector(".galerie");
 const filtres = document.querySelector(".filtres");
 const modeEdition = document.querySelector(".mode-edition");
@@ -15,29 +13,34 @@ const btnModifier = document.querySelector(".btn-modifier");
 const filtresDiv = document.querySelector(".filtres");
 const lienConnexion = document.querySelector(".lien-connexion");
 
-//Modale
+// ---------- DOM : MODALE, STRUCTURE ----------
 const modale = document.querySelector("#modale");
 const btnFermerModale = document.querySelector(".fermer-modale");
-const modaleGalerie = document.querySelector(".modale-galerie");
-const select = document.getElementById("categorie");
-const btnAjouterPhoto = document.querySelector(".btn-ajouter-photo");
-const btnRetour = document.querySelector(".btn-retour");
 const vueGalerie = document.querySelector(".vue-galerie");
 const vueFormulaire = document.querySelector(".vue-formulaire");
+const btnAjouterPhoto = document.querySelector(".btn-ajouter-photo");
+const btnRetour = document.querySelector(".btn-retour");
+
+// ---------- DOM : MODALE, GALERIE (SUPPRESSION) ----------
+const modaleGalerie = document.querySelector(".modale-galerie");
+const messageErreurSuppression = document.querySelector(".message-erreur-suppression");
+
+// ---------- DOM : MODALE, UPLOAD IMAGE ----------
+const zoneUpload = document.querySelector(".zone-upload");
 const btnChoisirPhoto = document.querySelector(".btn-choisir-photo");
 const inputFichier = document.getElementById("inputFichier");
 const apercuImage = document.getElementById("apercuImage");
 const apercuDefaut = document.getElementById("apercu-defaut");
 const uploadInfo = document.querySelector(".upload-info");
-const zoneUpload = document.querySelector(".zone-upload");
+const messageErreurImage = document.querySelector(".message-erreur-image");
+
+// ---------- DOM : MODALE, FORMULAIRE D'AJOUT ----------
+const select = document.getElementById("categorie");
 const btnValider = document.getElementById("btn-valider");
 const formAjoutPhoto = document.getElementById("form-ajout-photo");
 const messageErreurAPI = document.querySelector(".message-erreur-api");
-const messageErreurImage = document.querySelector(".message-erreur-image");
-const messageErreurSuppression = document.querySelector(".message-erreur-suppression");
 
-
-//FUNCTIONS
+// ---------- AFFICHAGE GALERIE ----------
 function afficherGalerie(projetsAAfficher) {
     galerie.innerHTML = ""
     projetsAAfficher.forEach((projet) => {
@@ -91,6 +94,7 @@ function afficherGalerieModale(projetsAAfficher) {
     });
 }
 
+// ---------- FILTRES : HELPER ----------
 function changerBoutonActif(bouton) {
     const boutonActif = filtres.querySelector(".actif");
     if (boutonActif) {
@@ -99,6 +103,7 @@ function changerBoutonActif(bouton) {
     bouton.classList.add("actif");
 }
 
+// ---------- MODE ÉDITION ----------
 if (token) {
     modeEdition.style.display = "flex";
     btnModifier.style.display = "flex";
@@ -113,6 +118,7 @@ if (token) {
     });
 }
 
+// ---------- VALIDATION DU FORMULAIRE D'AJOUT ----------
 function verifierFormulaire() {
     const titre = document.getElementById("titre").value;
     const categorie = document.getElementById("categorie").value;
@@ -135,16 +141,18 @@ function reinitialiserFormulaireAjout() {
 }
 
 
+// ---------- INITIALISATION ----------
 afficherGalerie(projets);
 afficherGalerieModale(projets);
 verifierFormulaire();
 
-// Gestion du hash pour le défilement vers un élément spécifique
+// Défilement vers l'ancre une fois la galerie rendue
 if (window.location.hash) {
     document.querySelector(window.location.hash)?.scrollIntoView();
 }
 
-// Creer "Tous" button
+// ---------- FILTRES ----------
+// Bouton "Tous"
 const buttonFiltreTous = document.createElement("button");
 buttonFiltreTous.innerText = "Tous";
 buttonFiltreTous.classList.add("actif");
@@ -186,7 +194,7 @@ categories.forEach((categorie) => {
     });
 });
 
-// 1.Le comportement de la modale 
+// ---------- MODALE : OUVERTURE / FERMETURE ----------
 btnModifier.addEventListener("click", () => {
     modale.style.display = "flex";
     vueGalerie.style.display = "block";
@@ -220,6 +228,7 @@ btnRetour.addEventListener("click", () => {
     vueGalerie.style.display = "block";
 });
 
+// ---------- MODALE : UPLOAD IMAGE ----------
 btnChoisirPhoto.addEventListener("click", () => {
     inputFichier.click();
 });
@@ -244,6 +253,7 @@ inputFichier.addEventListener("change", (event) => {
 document.getElementById("titre").addEventListener("input", verifierFormulaire);
 document.getElementById("categorie").addEventListener("change", verifierFormulaire);
 
+// ---------- MODALE : AJOUT PROJET ----------
 formAjoutPhoto.addEventListener("submit", async (event) => {
     event.preventDefault();
     messageErreurAPI.style.visibility = "hidden";
