@@ -161,6 +161,10 @@ table {
   width: 100%;
 }
 
+.mode-edition img {
+  filter: brightness(0) invert(1);
+}
+
 header {
   width: 1140px;
   margin: 0 auto;
@@ -196,12 +200,13 @@ nav ul {
   display: flex;
   align-items: center;
   list-style-type: none;
+  gap: 44px;
+  
 }
 nav li:not(:last-child) a {
   height: 19px;
 }
 nav li {
-  padding: 0 10px;
   font-size: 16px;
 }
 nav a {
@@ -313,6 +318,11 @@ li:hover {
   margin-bottom: 9px;
   color: #b9c5cc;
 }
+#apercuImage {
+  width: auto;
+  height: 100%;
+  /* object-fit: cover; */
+}
 
 .zone-upload svg {
   width: 46px;
@@ -413,12 +423,16 @@ li:hover {
   width: 100%;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  grid-column-gap: 20px;
-  grid-row-gap: 20px;
+  grid-column-gap: 18px;
+  grid-row-gap: 16px;
+  margin-bottom: 57px;
 }
 
 .galerie img {
   width: 100%;
+  object-fit: cover;
+  aspect-ratio: 3/4;
+  margin-bottom: 3px;
 }
 #contact {
   width: 570px;
@@ -605,6 +619,18 @@ input[type="submit"] {
 .btn-supprimer svg {
   width: 9px;
   height: 11px;
+}
+
+.message-erreur-ajout {
+  color: #b1663c;
+  font-size: 0.9em;
+  margin-top: 1em;
+  text-align: center;
+}
+
+#btn-valider:disabled {
+  background-color: #A7A7A7;
+  cursor: not-allowed;
 }
 
 .fermer-modale {

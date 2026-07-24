@@ -19,3 +19,25 @@ export async function seConnecter(email, motDePasse) {
   const donnees = await reponse.json();
   return donnees;
 }
+
+export async function supprimerProjet(id) {
+  const token = localStorage.getItem("token");
+  const reponse = await fetch(`http://localhost:5678/api/works/${id}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return reponse;
+}
+
+export async function ajouterProjet(donnees) {
+    const token = localStorage.getItem("token");
+    const reponse = await fetch("http://localhost:5678/api/works", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}`},
+    body: donnees,
+  });
+    const nouveauProjet = await reponse.json();
+    return { ok: reponse.ok, nouveauProjet };
+}
