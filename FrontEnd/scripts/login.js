@@ -6,12 +6,26 @@ const messageErreur = document.querySelector(".message-erreur");
 formulaire.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    // Cache l'erreur au cas où c'est une deuxième tentative
-    messageErreur.style.display = "none";
-
-    // Récupère les valeurs des champs
+    // Récupère les valeurs au moment de la soumission
     const email = document.querySelector("#email").value;
     const motDePasse = document.querySelector("#password").value;
+
+    const emailValide = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+
+    if (!email.trim() || !motDePasse.trim()) {
+        messageErreur.textContent = "Veuillez remplir tous les champs.";
+        messageErreur.style.display = "block";
+        return;
+    }
+
+    if (!emailValide) {
+        messageErreur.textContent = "Format d'email invalide.";
+        messageErreur.style.display = "block";
+        return;
+    }
+
+    // Cache l'erreur au cas où c'est une deuxième tentative
+    messageErreur.style.display = "none";
 
     // Envoie les informations à l'API
     const resultat = await seConnecter(email, motDePasse);
