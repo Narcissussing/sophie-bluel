@@ -1,13 +1,11 @@
-import { obtenirProjets, obtenirCategories } from './api.js';
+import { obtenirProjets, obtenirCategories, supprimerProjet, ajouterProjet } from './api.js';
 
-//Recuperation des projets et categories depuis l'API
-const projets = await obtenirProjets();
+// ---------- DONNÉES ----------
+let projets = await obtenirProjets();
 const categories = await obtenirCategories();
-
-//Recuperation du token pour le mode edition
 const token = localStorage.getItem("token");
 
-//Recuperation des elements du DOM
+// ---------- DOM : PAGE PRINCIPALE ----------
 const galerie = document.querySelector(".galerie");
 const filtres = document.querySelector(".filtres");
 const modeEdition = document.querySelector(".mode-edition");
@@ -15,18 +13,34 @@ const btnModifier = document.querySelector(".btn-modifier");
 const filtresDiv = document.querySelector(".filtres");
 const lienConnexion = document.querySelector(".lien-connexion");
 
-//Modale
+// ---------- DOM : MODALE, STRUCTURE ----------
 const modale = document.querySelector("#modale");
 const btnFermerModale = document.querySelector(".fermer-modale");
-const modaleGalerie = document.querySelector(".modale-galerie");
-const select = document.getElementById("categorie");
-const btnAjouterPhoto = document.querySelector(".btn-ajouter-photo");
-const btnRetour = document.querySelector(".btn-retour");
 const vueGalerie = document.querySelector(".vue-galerie");
 const vueFormulaire = document.querySelector(".vue-formulaire");
+const btnAjouterPhoto = document.querySelector(".btn-ajouter-photo");
+const btnRetour = document.querySelector(".btn-retour");
 
+// ---------- DOM : MODALE, GALERIE (SUPPRESSION) ----------
+const modaleGalerie = document.querySelector(".modale-galerie");
+const messageErreurSuppression = document.querySelector(".message-erreur-suppression");
 
-//FUNCTIONS
+// ---------- DOM : MODALE, UPLOAD IMAGE ----------
+const zoneUpload = document.querySelector(".zone-upload");
+const btnChoisirPhoto = document.querySelector(".btn-choisir-photo");
+const inputFichier = document.getElementById("inputFichier");
+const apercuImage = document.getElementById("apercuImage");
+const apercuDefaut = document.getElementById("apercu-defaut");
+const uploadInfo = document.querySelector(".upload-info");
+const messageErreurImage = document.querySelector(".message-erreur-image");
+
+// ---------- DOM : MODALE, FORMULAIRE D'AJOUT ----------
+const select = document.getElementById("categorie");
+const btnValider = document.getElementById("btn-valider");
+const formAjoutPhoto = document.getElementById("form-ajout-photo");
+const messageErreurAPI = document.querySelector(".message-erreur-api");
+
+// ---------- AFFICHAGE GALERIE ----------
 function afficherGalerie(projetsAAfficher) {
     galerie.innerHTML = ""
     projetsAAfficher.forEach((projet) => {
@@ -34,6 +48,7 @@ function afficherGalerie(projetsAAfficher) {
 
         const imgProjet = document.createElement("img");
         imgProjet.src = projet.imageUrl;
+        imgProjet.alt = projet.title;
 
         const titreProjet = document.createElement("figcaption");
         titreProjet.innerText = projet.title;
@@ -53,19 +68,33 @@ function afficherGalerieModale(projetsAAfficher) {
 
         const imgProjet = document.createElement("img");
         imgProjet.src = projet.imageUrl;
+        imgProjet.alt = projet.title;
 
         const btnSupprimer = document.createElement("button");
-        btnSupprimer.innerHTML = `<svg width="9" height="11" viewBox="0 0 9 11" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.71607 0.35558C2.82455 0.136607 3.04754 0 3.29063 0H5.70938C5.95246 0 6.17545 0.136607 6.28393 0.35558L6.42857 0.642857H8.35714C8.71272 0.642857 9 0.930134 9 1.28571C9 1.64129 8.71272 1.92857 8.35714 1.92857H0.642857C0.287277 1.92857 0 1.64129 0 1.28571C0 0.930134 0.287277 0.642857 0.642857 0.642857H2.57143L2.71607 0.35558ZM0.642857 2.57143H8.35714V9C8.35714 9.70915 7.78058 10.2857 7.07143 10.2857H1.92857C1.21942 10.2857 0.642857 9.70915 0.642857 9V2.57143ZM2.57143 3.85714C2.39464 3.85714 2.25 4.00179 2.25 4.17857V8.67857C2.25 8.85536 2.39464 9 2.57143 9C2.74821 9 2.89286 8.85536 2.89286 8.67857V4.17857C2.89286 4.00179 2.74821 3.85714 2.57143 3.85714ZM4.5 3.85714C4.32321 3.85714 4.17857 4.00179 4.17857 4.17857V8.67857C4.17857 8.85536 4.32321 9 4.5 9C4.67679 9 4.82143 8.85536 4.82143 8.67857V4.17857C4.82143 4.00179 4.67679 3.85714 4.67679 3.85714ZM6.42857 3.85714C6.25179 3.85714 6.10714 4.00179 6.10714 4.17857V8.67857C6.10714 8.85536 6.25179 9 6.42857 9C6.60536 9 6.75 8.85536 6.75 8.67857V4.17857C6.75 4.00179 6.60536 3.85714 6.60536 3.85714Z" fill="white"/></svg>`;
+        btnSupprimer.innerHTML = `<img src="./assets/icons/supprimer.svg" alt="Supprimer" width="9" height="11">`;
         btnSupprimer.classList.add("btn-supprimer");
+        btnSupprimer.addEventListener("click", async (event) => {
+            event.preventDefault();
+            const reponse = await supprimerProjet(projet.id);
+            if (reponse.ok) {
+                figureProjet.remove();
+                projets = projets.filter((p) => p.id !== projet.id);
+                afficherGalerie(projets);
+                messageErreurSuppression.style.visibility = "hidden";
+            } else {
+                messageErreurSuppression.textContent = "Une erreur est survenue, veuillez réessayer.";
+                messageErreurSuppression.style.visibility = "visible";
+            }
+        });
 
         figureProjet.appendChild(imgProjet);
         figureProjet.appendChild(btnSupprimer);
 
-        // Ajouter figure dans la section principale
         modaleGalerie.appendChild(figureProjet);
     });
 }
 
+// ---------- FILTRES : HELPER ----------
 function changerBoutonActif(bouton) {
     const boutonActif = filtres.querySelector(".actif");
     if (boutonActif) {
@@ -74,6 +103,7 @@ function changerBoutonActif(bouton) {
     bouton.classList.add("actif");
 }
 
+// ---------- MODE ÉDITION ----------
 if (token) {
     modeEdition.style.display = "flex";
     btnModifier.style.display = "flex";
@@ -88,11 +118,41 @@ if (token) {
     });
 }
 
+// ---------- VALIDATION DU FORMULAIRE D'AJOUT ----------
+function verifierFormulaire() {
+    const titre = document.getElementById("titre").value;
+    const categorie = document.getElementById("categorie").value;
+    const image = document.getElementById("inputFichier").files[0];
 
-afficherGalerie(projets)
+    const estValide = titre.trim() !== "" && categorie !== "" && image !== undefined;
+
+    btnValider.disabled = !estValide;
+}
+
+function reinitialiserFormulaireAjout() {
+    formAjoutPhoto.reset();
+    apercuImage.style.display = "none";
+    apercuDefaut.style.display = "flex";
+    btnChoisirPhoto.style.display = "flex";
+    uploadInfo.style.display = "flex";
+    messageErreurAPI.style.visibility = "hidden";
+    messageErreurImage.style.visibility = "hidden";
+    verifierFormulaire();
+}
+
+
+// ---------- INITIALISATION ----------
+afficherGalerie(projets);
 afficherGalerieModale(projets);
+verifierFormulaire();
 
-// Creer "Tous" button
+// Défilement vers l'ancre une fois la galerie rendue
+if (window.location.hash) {
+    document.querySelector(window.location.hash)?.scrollIntoView();
+}
+
+// ---------- FILTRES ----------
+// Bouton "Tous"
 const buttonFiltreTous = document.createElement("button");
 buttonFiltreTous.innerText = "Tous";
 buttonFiltreTous.classList.add("actif");
@@ -109,6 +169,7 @@ optionPlaceholder.value = "";
 optionPlaceholder.textContent = "";
 optionPlaceholder.disabled = true;
 optionPlaceholder.selected = true;
+optionPlaceholder.setAttribute("selected", "");
 
 select.appendChild(optionPlaceholder);
 
@@ -133,18 +194,27 @@ categories.forEach((categorie) => {
     });
 });
 
-// 1.Le comportement de la modale 
+// ---------- MODALE : OUVERTURE / FERMETURE ----------
 btnModifier.addEventListener("click", () => {
     modale.style.display = "flex";
+    vueGalerie.style.display = "block";
+    vueFormulaire.style.display = "none";
 });
 
 btnFermerModale.addEventListener("click", () => {
     modale.style.display = "none";
+    reinitialiserFormulaireAjout();
+    vueFormulaire.style.display = "none";
+    vueGalerie.style.display = "block";
 });
+
 
 modale.addEventListener("click", (event) => {
     if (event.target === modale) {
         modale.style.display = "none";
+        reinitialiserFormulaireAjout();
+        vueFormulaire.style.display = "none";
+        vueGalerie.style.display = "block";
     }
 });
 
@@ -156,4 +226,63 @@ btnAjouterPhoto.addEventListener("click", () => {
 btnRetour.addEventListener("click", () => {
     vueFormulaire.style.display = "none";
     vueGalerie.style.display = "block";
+});
+
+// ---------- MODALE : UPLOAD IMAGE ----------
+btnChoisirPhoto.addEventListener("click", () => {
+    inputFichier.click();
+});
+
+inputFichier.addEventListener("change", (event) => {
+    const image = event.target.files[0];
+    if (image.size > 4 * 1024 * 1024) {
+        messageErreurImage.textContent = "Image trop lourde (4mo max)";
+        messageErreurImage.style.visibility = "visible";
+        inputFichier.value = "";
+        verifierFormulaire();
+        return;
+    }
+    messageErreurImage.style.visibility = "hidden";
+    apercuImage.src = URL.createObjectURL(image);
+    apercuImage.style.display = "block";
+    uploadInfo.style.display = "none";
+    apercuDefaut.style.display = "none";
+    btnChoisirPhoto.style.display = "none";
+    verifierFormulaire();
+});
+document.getElementById("titre").addEventListener("input", verifierFormulaire);
+document.getElementById("categorie").addEventListener("change", verifierFormulaire);
+
+// ---------- MODALE : AJOUT PROJET ----------
+formAjoutPhoto.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    messageErreurAPI.style.visibility = "hidden";
+
+    const donnees = new FormData();
+    const titre = document.getElementById("titre").value;
+    const categorie = Number(document.getElementById("categorie").value);
+    const image = document.getElementById("inputFichier").files[0];
+
+    donnees.append("title", titre);
+    donnees.append("image", image);
+    donnees.append("category", categorie);
+
+    const { ok, nouveauProjet } = await ajouterProjet(donnees);
+
+    if (ok) {
+        projets.push(nouveauProjet);
+        afficherGalerie(projets);
+        afficherGalerieModale(projets);
+
+        formAjoutPhoto.reset();
+        apercuImage.style.display = "none";
+        apercuDefaut.style.display = "flex";
+        btnChoisirPhoto.style.display = "flex";
+        uploadInfo.style.display = "flex";
+        verifierFormulaire();
+
+        modale.style.display = "none";
+    } else {
+        messageErreurAPI.style.visibility = "visible";
+    }
 });
