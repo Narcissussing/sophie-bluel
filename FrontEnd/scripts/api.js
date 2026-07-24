@@ -1,43 +1,58 @@
 export async function obtenirProjets() {
-  const response = await fetch("http://localhost:5678/api/works");
-  const data = await response.json();
-  return data;
+  try {
+    const response = await fetch("http://localhost:5678/api/works");
+    return await response.json();
+  } catch (erreur) {
+    return [];
+  }
 }
 
 export async function obtenirCategories() {
-  const response = await fetch("http://localhost:5678/api/categories");
-  const data = await response.json();
-  return data;
+  try {
+    const response = await fetch("http://localhost:5678/api/categories");
+    return await response.json();
+  } catch (erreur) {
+    return [];
+  }
 }
 
 export async function seConnecter(email, motDePasse) {
-  const reponse = await fetch("http://localhost:5678/api/users/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email: email, password: motDePasse }),
-  });
-  const donnees = await reponse.json();
-  return donnees;
+  try {
+    const reponse = await fetch("http://localhost:5678/api/users/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: email, password: motDePasse }),
+    });
+    return await reponse.json();
+  } catch (erreur) {
+    return { token: null };
+  }
 }
 
 export async function supprimerProjet(id) {
   const token = localStorage.getItem("token");
-  const reponse = await fetch(`http://localhost:5678/api/works/${id}`, {
-    method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  return reponse;
+  try {
+    const reponse = await fetch(`http://localhost:5678/api/works/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return { ok: reponse.ok };
+  } catch (erreur) {
+    return { ok: false };
+  }
 }
 
 export async function ajouterProjet(donnees) {
-    const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
+  try {
     const reponse = await fetch("http://localhost:5678/api/works", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${token}`},
-    body: donnees,
-  });
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+      body: donnees,
+    });
     const nouveauProjet = await reponse.json();
     return { ok: reponse.ok, nouveauProjet };
+  } catch (erreur) {
+    return { ok: false, nouveauProjet: null };
+  }
 }
