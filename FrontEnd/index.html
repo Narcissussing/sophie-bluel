@@ -15,7 +15,12 @@
   </head>
   <body>
     <div class="mode-edition">
-      <img src="./assets/icons/modifier.svg" alt="" width="14" height="14" />
+      <img
+        src="./assets/icons/modifier.svg"
+        alt="Icone instagram"
+        width="14"
+        height="14"
+      />
       <p>Mode édition</p>
     </div>
 
@@ -29,7 +34,7 @@
             <li><a href="./login.html" class="lien-connexion">login</a></li>
             <li>
               <a href="https://www.instagram.com" target="_blank"
-                ><img src="./assets/icons/instagram.svg" alt="Instagram" a
+                ><img src="./assets/icons/instagram.svg" alt="Icone instagram"
               /></a>
             </li>
           </ul>
@@ -103,6 +108,7 @@
             <div class="vue-galerie">
               <h3>Galerie photo</h3>
               <div class="modale-galerie"></div>
+              <p class="message-erreur-suppression"></p>
               <hr class="modale-separateur" />
               <button class="btn-ajouter-photo">Ajouter une photo</button>
             </div>
@@ -136,6 +142,7 @@
                   </button>
                   <p class="upload-info">jpg, png : 4mo max</p>
                 </div>
+                <p class="message-erreur-image"></p>
 
                 <label for="titre">Titre</label>
                 <input type="text" id="titre" name="titre" />
@@ -143,7 +150,7 @@
                 <label for="categorie">Catégorie</label>
                 <select id="categorie" name="categorie"></select>
                 <hr class="modale-separateur" />
-                <p class="message-erreur-ajout" hidden>
+                <p class="message-erreur-api">
                   Une erreur est survenue, veuillez réessayer.
                 </p>
 

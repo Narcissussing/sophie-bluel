@@ -32,7 +32,9 @@ const uploadInfo = document.querySelector(".upload-info");
 const zoneUpload = document.querySelector(".zone-upload");
 const btnValider = document.getElementById("btn-valider");
 const formAjoutPhoto = document.getElementById("form-ajout-photo");
-const messageErreurAjout = document.querySelector(".message-erreur-ajout");
+const messageErreurAPI = document.querySelector(".message-erreur-api");
+const messageErreurImage = document.querySelector(".message-erreur-image");
+const messageErreurSuppression = document.querySelector(".message-erreur-suppression");
 
 
 //FUNCTIONS
@@ -43,6 +45,7 @@ function afficherGalerie(projetsAAfficher) {
 
         const imgProjet = document.createElement("img");
         imgProjet.src = projet.imageUrl;
+        imgProjet.alt = projet.title;
 
         const titreProjet = document.createElement("figcaption");
         titreProjet.innerText = projet.title;
@@ -62,6 +65,7 @@ function afficherGalerieModale(projetsAAfficher) {
 
         const imgProjet = document.createElement("img");
         imgProjet.src = projet.imageUrl;
+        imgProjet.alt = projet.title;
 
         const btnSupprimer = document.createElement("button");
         btnSupprimer.innerHTML = `<img src="./assets/icons/supprimer.svg" alt="Supprimer" width="9" height="11">`;
@@ -73,6 +77,10 @@ function afficherGalerieModale(projetsAAfficher) {
                 figureProjet.remove();
                 projets = projets.filter((p) => p.id !== projet.id);
                 afficherGalerie(projets);
+                messageErreurSuppression.style.visibility = "hidden";
+            } else {
+                messageErreurSuppression.textContent = "Une erreur est survenue, veuillez réessayer.";
+                messageErreurSuppression.style.visibility = "visible";
             }
         });
 
@@ -121,7 +129,8 @@ function reinitialiserFormulaireAjout() {
     apercuDefaut.style.display = "flex";
     btnChoisirPhoto.style.display = "flex";
     uploadInfo.style.display = "flex";
-    messageErreurAjout.hidden = true;
+    messageErreurAPI.style.visibility = "hidden";
+    messageErreurImage.style.visibility = "hidden";
     verifierFormulaire();
 }
 
@@ -129,6 +138,11 @@ function reinitialiserFormulaireAjout() {
 afficherGalerie(projets);
 afficherGalerieModale(projets);
 verifierFormulaire();
+
+// Gestion du hash pour le défilement vers un élément spécifique
+if (window.location.hash) {
+    document.querySelector(window.location.hash)?.scrollIntoView();
+}
 
 // Creer "Tous" button
 const buttonFiltreTous = document.createElement("button");
@@ -213,13 +227,13 @@ btnChoisirPhoto.addEventListener("click", () => {
 inputFichier.addEventListener("change", (event) => {
     const image = event.target.files[0];
     if (image.size > 4 * 1024 * 1024) {
-        messageErreurAjout.textContent = "Image trop lourde (4mo max)";
-        messageErreurAjout.hidden = false;
+        messageErreurImage.textContent = "Image trop lourde (4mo max)";
+        messageErreurImage.style.visibility = "visible";
         inputFichier.value = "";
         verifierFormulaire();
         return;
     }
-    messageErreurAjout.hidden = true;
+    messageErreurImage.style.visibility = "hidden";
     apercuImage.src = URL.createObjectURL(image);
     apercuImage.style.display = "block";
     uploadInfo.style.display = "none";
@@ -232,7 +246,7 @@ document.getElementById("categorie").addEventListener("change", verifierFormulai
 
 formAjoutPhoto.addEventListener("submit", async (event) => {
     event.preventDefault();
-    messageErreurAjout.hidden = true;
+    messageErreurAPI.style.visibility = "hidden";
 
     const donnees = new FormData();
     const titre = document.getElementById("titre").value;
@@ -259,6 +273,6 @@ formAjoutPhoto.addEventListener("submit", async (event) => {
 
         modale.style.display = "none";
     } else {
-        messageErreurAjout.hidden = false;
+        messageErreurAPI.style.visibility = "visible";
     }
 });

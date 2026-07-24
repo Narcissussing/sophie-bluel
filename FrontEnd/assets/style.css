@@ -161,8 +161,14 @@ table {
   width: 100%;
 }
 
+.mode-edition p {
+  font-size: 16px;
+}
+
 .mode-edition img {
   filter: brightness(0) invert(1);
+  width: 15.58px;
+  height: 15.58px;
 }
 
 header {
@@ -215,8 +221,16 @@ nav a {
   display: flex;
   align-items: center;
 }
+nav a[href="./login.html"] {
+  font-weight: 600;
+}
 nav img {
   height: 22px;
+}
+
+nav a.page-active {
+  font-weight: 600;
+  line-height: 1;
 }
 
 li:hover {
@@ -330,14 +344,20 @@ li:hover {
 }
 
 .zone-upload .btn-choisir-photo {
+  width: 173px;
+  height: 33.28px;
   background-color: #cbd6dc;
   color: #306685;
   border: none;
   border-radius: 60px;
-  padding: 0.6em 1.2em;
+  padding: 8.4px 16.8px;
   font-family: "Work Sans";
   font-size: 14px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 .zone-upload .upload-info {
@@ -392,6 +412,7 @@ li:hover {
 #form-ajout-photo input[type="submit"] {
   margin-top: 0;
   width: 237px;
+  height: 36px;
 }
 
 .filtres {
@@ -434,6 +455,11 @@ li:hover {
   aspect-ratio: 3/4;
   margin-bottom: 3px;
 }
+
+.galerie figcaption {
+  font-size: 13px;
+}
+
 #contact {
   width: 570px;
   margin: auto;
@@ -528,6 +554,32 @@ input[type="submit"] {
   margin-top: -1em;
   display: none;
 }
+.message-erreur-api,
+.message-erreur-image {
+  color: #b1663c;
+  font-size: 0.9em;
+  text-align: center;
+  min-height: 1.2em;
+  visibility: hidden;
+}
+
+.message-erreur-suppression {
+  color: #b1663c;
+  font-size: 0.9em;
+  text-align: center;
+  min-height: 1.2em;
+  visibility: hidden;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+}
+.message-erreur-api {
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+}
+
+.message-erreur-image {
+  margin-top: 8px;
+}
 
 .modale {
   display: none;
@@ -586,17 +638,20 @@ input[type="submit"] {
 }
 
 .btn-ajouter-photo {
+  width: 237px;
+  height: 36px;
   font-family: "Syne";
   font-weight: 700;
   font-size: 14px;
   color: white;
   background-color: #1d6154;
   border: none;
-  width: 237px;
   border-radius: 60px;
-  padding: 0.8em 2em;
+  padding: 0;
   cursor: pointer;
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin: 0 auto;
 }
 
