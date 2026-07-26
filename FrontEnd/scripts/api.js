@@ -1,7 +1,11 @@
 export async function obtenirProjets() {
   try {
     const response = await fetch("http://localhost:5678/api/works");
-    return await response.json();
+    if (!response.ok) {
+      return [];
+    }
+    const donnees = await response.json();
+    return Array.isArray(donnees) ? donnees : [];
   } catch (erreur) {
     return [];
   }
@@ -10,7 +14,11 @@ export async function obtenirProjets() {
 export async function obtenirCategories() {
   try {
     const response = await fetch("http://localhost:5678/api/categories");
-    return await response.json();
+    if (!response.ok) {
+      return [];
+    }
+    const donnees = await response.json();
+    return Array.isArray(donnees) ? donnees : [];
   } catch (erreur) {
     return [];
   }
