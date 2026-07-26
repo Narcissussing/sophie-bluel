@@ -10,7 +10,10 @@
       href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Work+Sans&display=swap"
       rel="stylesheet"
     />
-    <meta name="description" content="" />
+    <meta
+      name="description"
+      content="Sophie Bluel, architecte d'intérieur : découvrez ses projets et contactez-la pour votre prochain chantier."
+    />
     <link rel="stylesheet" href="./assets/style.css" />
   </head>
   <body>
@@ -33,7 +36,10 @@
             <li><a href="#contact">contact</a></li>
             <li><a href="./login.html" class="lien-connexion">login</a></li>
             <li>
-              <a href="https://www.instagram.com" target="_blank"
+              <a
+                href="https://www.instagram.com"
+                target="_blank"
+                rel="noopener noreferrer"
                 ><img src="./assets/icons/instagram.svg" alt="Icone instagram"
               /></a>
             </li>
@@ -100,7 +106,12 @@
           </form>
         </section>
         <div class="modale" id="modale">
-          <div class="modale-contenu">
+          <div
+            class="modale-contenu"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Gestion des photos du portfolio"
+          >
             <button class="fermer-modale">
               <img src="./assets/icons/fermer.svg" alt="Fermer" />
             </button>
@@ -108,7 +119,7 @@
             <div class="vue-galerie">
               <h3>Galerie photo</h3>
               <div class="modale-galerie"></div>
-              <p class="message-erreur-suppression"></p>
+              <p class="message-erreur-suppression" aria-live="polite"></p>
               <hr class="modale-separateur" />
               <button class="btn-ajouter-photo">Ajouter une photo</button>
             </div>
@@ -142,7 +153,7 @@
                   </button>
                   <p class="upload-info">jpg, png : 4mo max</p>
                 </div>
-                <p class="message-erreur-image"></p>
+                <p class="message-erreur-image" aria-live="polite"></p>
 
                 <label for="titre">Titre</label>
                 <input type="text" id="titre" name="titre" />
@@ -150,7 +161,7 @@
                 <label for="categorie">Catégorie</label>
                 <select id="categorie" name="categorie"></select>
                 <hr class="modale-separateur" />
-                <p class="message-erreur-api">
+                <p class="message-erreur-api" aria-live="polite">
                   Une erreur est survenue, veuillez réessayer.
                 </p>
 

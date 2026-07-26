@@ -195,26 +195,62 @@ categories.forEach((categorie) => {
 });
 
 // ---------- MODALE : OUVERTURE / FERMETURE ----------
-btnModifier.addEventListener("click", () => {
+// Contenu de la page masqué aux lecteurs d'écran tant que la modale est ouverte
+const contenuPrincipal = document.querySelectorAll("header, main > section, footer");
+
+function ouvrirModale() {
     modale.style.display = "flex";
     vueGalerie.style.display = "block";
     vueFormulaire.style.display = "none";
-});
+    contenuPrincipal.forEach((element) => element.setAttribute("inert", ""));
+    btnFermerModale.focus();
+}
 
-btnFermerModale.addEventListener("click", () => {
+function fermerModale() {
     modale.style.display = "none";
     reinitialiserFormulaireAjout();
     vueFormulaire.style.display = "none";
     vueGalerie.style.display = "block";
-});
+    contenuPrincipal.forEach((element) => element.removeAttribute("inert"));
+    btnModifier.focus();
+}
 
+btnModifier.addEventListener("click", ouvrirModale);
+
+btnFermerModale.addEventListener("click", fermerModale);
 
 modale.addEventListener("click", (event) => {
     if (event.target === modale) {
-        modale.style.display = "none";
-        reinitialiserFormulaireAjout();
-        vueFormulaire.style.display = "none";
-        vueGalerie.style.display = "block";
+        fermerModale();
+    }
+});
+
+// Fermeture avec Échap
+document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && modale.style.display === "flex") {
+        fermerModale();
+    }
+});
+
+// Piège à focus : le Tab reste à l'intérieur de la modale
+modale.addEventListener("keydown", (event) => {
+    if (event.key !== "Tab") {
+        return;
+    }
+
+    const elementsFocusables = modale.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    const visibles = Array.from(elementsFocusables).filter((element) => element.offsetParent !== null);
+    const premier = visibles[0];
+    const dernier = visibles[visibles.length - 1];
+
+    if (event.shiftKey && document.activeElement === premier) {
+        event.preventDefault();
+        dernier.focus();
+    } else if (!event.shiftKey && document.activeElement === dernier) {
+        event.preventDefault();
+        premier.focus();
     }
 });
 
@@ -235,6 +271,12 @@ btnChoisirPhoto.addEventListener("click", () => {
 
 inputFichier.addEventListener("change", (event) => {
     const image = event.target.files[0];
+
+    // Annulation du sélecteur de fichier : aucune image choisie
+    if (!image) {
+        return;
+    }
+
     if (image.size > 4 * 1024 * 1024) {
         messageErreurImage.textContent = "Image trop lourde (4mo max)";
         messageErreurImage.style.visibility = "visible";

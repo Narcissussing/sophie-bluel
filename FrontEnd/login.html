@@ -10,7 +10,10 @@
       href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Work+Sans:wght@400;600&display=swap"
       rel="stylesheet"
     />
-    <meta name="description" content="" />
+    <meta
+      name="description"
+      content="Connexion à l'espace d'administration du portfolio de Sophie Bluel, architecte d'intérieur."
+    />
     <link rel="stylesheet" href="./assets/style.css" />
   </head>
   <body>
@@ -22,7 +25,10 @@
           <li><a href="./index.html#contact">contact</a></li>
           <li><a href="./login.html" class="page-active">login</a></li>
           <li>
-            <a href="https://www.instagram.com" target="_blank"
+            <a
+              href="https://www.instagram.com"
+              target="_blank"
+              rel="noopener noreferrer"
               ><img src="./assets/icons/instagram.svg" alt="Icone instagram"
             /></a>
           </li>
@@ -36,7 +42,7 @@
         <input type="text" name="email" id="email" />
         <label for="password">Mot de passe</label>
         <input type="password" name="password" id="password" />
-        <p class="message-erreur"></p>
+        <p class="message-erreur" aria-live="polite"></p>
         <input type="submit" value="Se connecter" />
       </form>
       <a href="#">Mot de passe oublié ?</a>
