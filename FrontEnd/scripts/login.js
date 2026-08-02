@@ -14,18 +14,18 @@ formulaire.addEventListener("submit", async (event) => {
 
     if (!email.trim() || !motDePasse.trim()) {
         messageErreur.textContent = "Veuillez remplir tous les champs.";
-        messageErreur.style.display = "block";
+        messageErreur.style.visibility = "visible";
         return;
     }
 
     if (!emailValide) {
         messageErreur.textContent = "Format d'email invalide.";
-        messageErreur.style.display = "block";
+        messageErreur.style.visibility = "visible";
         return;
     }
 
     // Cache l'erreur au cas où c'est une deuxième tentative
-    messageErreur.style.display = "none";
+    messageErreur.style.visibility = "hidden";
 
     // Envoie les informations à l'API
     const resultat = await seConnecter(email, motDePasse);
@@ -40,6 +40,6 @@ formulaire.addEventListener("submit", async (event) => {
     } else {
         // Affiche l'erreur
         messageErreur.textContent = "Email ou mot de passe incorrect.";
-        messageErreur.style.display = "block";
+        messageErreur.style.visibility = "visible";
     }
 });

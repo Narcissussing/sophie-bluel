@@ -10,7 +10,6 @@ const galerie = document.querySelector(".galerie");
 const filtres = document.querySelector(".filtres");
 const modeEdition = document.querySelector(".mode-edition");
 const btnModifier = document.querySelector(".btn-modifier");
-const filtresDiv = document.querySelector(".filtres");
 const lienConnexion = document.querySelector(".lien-connexion");
 
 // ---------- DOM : MODALE, STRUCTURE ----------
@@ -26,7 +25,6 @@ const modaleGalerie = document.querySelector(".modale-galerie");
 const messageErreurSuppression = document.querySelector(".message-erreur-suppression");
 
 // ---------- DOM : MODALE, UPLOAD IMAGE ----------
-const zoneUpload = document.querySelector(".zone-upload");
 const btnChoisirPhoto = document.querySelector(".btn-choisir-photo");
 const inputFichier = document.getElementById("inputFichier");
 const apercuImage = document.getElementById("apercuImage");
@@ -35,6 +33,7 @@ const uploadInfo = document.querySelector(".upload-info");
 const messageErreurImage = document.querySelector(".message-erreur-image");
 
 // ---------- DOM : MODALE, FORMULAIRE D'AJOUT ----------
+const inputTitre = document.getElementById("titre");
 const select = document.getElementById("categorie");
 const btnValider = document.getElementById("btn-valider");
 const formAjoutPhoto = document.getElementById("form-ajout-photo");
@@ -107,7 +106,7 @@ function changerBoutonActif(bouton) {
 if (token) {
     modeEdition.style.display = "flex";
     btnModifier.style.display = "flex";
-    filtresDiv.style.display = "none";
+    filtres.style.display = "none";
     lienConnexion.textContent = "logout";
     lienConnexion.href = "#";
 
@@ -120,9 +119,9 @@ if (token) {
 
 // ---------- VALIDATION DU FORMULAIRE D'AJOUT ----------
 function verifierFormulaire() {
-    const titre = document.getElementById("titre").value;
-    const categorie = document.getElementById("categorie").value;
-    const image = document.getElementById("inputFichier").files[0];
+    const titre = inputTitre.value;
+    const categorie = select.value;
+    const image = inputFichier.files[0];
 
     const estValide = titre.trim() !== "" && categorie !== "" && image !== undefined;
 
@@ -130,6 +129,9 @@ function verifierFormulaire() {
 }
 
 function reinitialiserFormulaireAjout() {
+    if (apercuImage.src.startsWith("blob:")) {
+        URL.revokeObjectURL(apercuImage.src);
+    }
     formAjoutPhoto.reset();
     apercuImage.style.display = "none";
     apercuDefaut.style.display = "flex";
@@ -202,7 +204,7 @@ function ouvrirModale() {
     modale.style.display = "flex";
     vueGalerie.style.display = "block";
     vueFormulaire.style.display = "none";
-    contenuPrincipal.forEach((element) => element.setAttribute("inert", ""));
+    contenuPrincipal.forEach((element) => element.setAttribute("inert", "")); //Masque le contenu principal
     btnFermerModale.focus();
 }
 
@@ -211,7 +213,7 @@ function fermerModale() {
     reinitialiserFormulaireAjout();
     vueFormulaire.style.display = "none";
     vueGalerie.style.display = "block";
-    contenuPrincipal.forEach((element) => element.removeAttribute("inert"));
+    contenuPrincipal.forEach((element) => element.removeAttribute("inert")); //Reactive le contenu principal
     btnModifier.focus();
 }
 
@@ -260,6 +262,7 @@ btnAjouterPhoto.addEventListener("click", () => {
 });
 
 btnRetour.addEventListener("click", () => {
+    reinitialiserFormulaireAjout();
     vueFormulaire.style.display = "none";
     vueGalerie.style.display = "block";
 });
@@ -285,6 +288,9 @@ inputFichier.addEventListener("change", (event) => {
         return;
     }
     messageErreurImage.style.visibility = "hidden";
+    if (apercuImage.src.startsWith("blob:")) {
+        URL.revokeObjectURL(apercuImage.src);
+    }
     apercuImage.src = URL.createObjectURL(image);
     apercuImage.style.display = "block";
     uploadInfo.style.display = "none";
@@ -292,8 +298,8 @@ inputFichier.addEventListener("change", (event) => {
     btnChoisirPhoto.style.display = "none";
     verifierFormulaire();
 });
-document.getElementById("titre").addEventListener("input", verifierFormulaire);
-document.getElementById("categorie").addEventListener("change", verifierFormulaire);
+inputTitre.addEventListener("input", verifierFormulaire);
+select.addEventListener("change", verifierFormulaire);
 
 // ---------- MODALE : AJOUT PROJET ----------
 formAjoutPhoto.addEventListener("submit", async (event) => {
@@ -301,9 +307,9 @@ formAjoutPhoto.addEventListener("submit", async (event) => {
     messageErreurAPI.style.visibility = "hidden";
 
     const donnees = new FormData();
-    const titre = document.getElementById("titre").value;
-    const categorie = Number(document.getElementById("categorie").value);
-    const image = document.getElementById("inputFichier").files[0];
+    const titre = inputTitre.value;
+    const categorie = Number(select.value);
+    const image = inputFichier.files[0];
 
     donnees.append("title", titre);
     donnees.append("image", image);
@@ -315,16 +321,9 @@ formAjoutPhoto.addEventListener("submit", async (event) => {
         projets.push(nouveauProjet);
         afficherGalerie(projets);
         afficherGalerieModale(projets);
-
-        formAjoutPhoto.reset();
-        apercuImage.style.display = "none";
-        apercuDefaut.style.display = "flex";
-        btnChoisirPhoto.style.display = "flex";
-        uploadInfo.style.display = "flex";
-        verifierFormulaire();
-
-        modale.style.display = "none";
+        fermerModale();
     } else {
+        messageErreurAPI.textContent = "Une erreur est survenue, veuillez réessayer.";
         messageErreurAPI.style.visibility = "visible";
     }
 });
