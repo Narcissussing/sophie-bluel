@@ -236,9 +236,6 @@ nav a {
   display: flex;
   align-items: center;
 }
-.lien-connexion {
-  font-weight: 600;
-}
 nav img {
   height: 2.2rem;
 }
@@ -457,7 +454,8 @@ input[type="submit"] {
   color: var(--color-accent);
   font-size: 0.9em;
   margin-top: -1em;
-  display: none;
+  min-height: 1.2em;
+  visibility: hidden;
 }
 .message-erreur-api,
 .message-erreur-image {
@@ -642,7 +640,6 @@ input[type="submit"] {
 #apercuImage {
   width: auto;
   height: 100%;
-  /* object-fit: cover; */
 }
 
 .zone-upload .btn-choisir-photo {
@@ -723,7 +720,7 @@ footer {
   width: 100%;
 }
 
-  footer nav {
+footer nav {
   width: 100%;
 }
 
