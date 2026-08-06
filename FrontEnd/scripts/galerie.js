@@ -3,26 +3,20 @@ import { obtenirProjets, obtenirCategories, supprimerProjet, ajouterProjet } fro
 // ---------- DONNÉES ----------
 let projets = await obtenirProjets();
 const categories = await obtenirCategories();
-const token = localStorage.getItem("token");
 
 // ---------- DOM : PAGE PRINCIPALE ----------
 const galerie = document.querySelector(".galerie");
 const filtres = document.querySelector(".filtres");
-const modeEdition = document.querySelector(".mode-edition");
 const btnModifier = document.querySelector(".btn-modifier");
-const lienConnexion = document.querySelector(".lien-connexion");
 
 // ---------- DOM : MODALE, STRUCTURE ----------
 const modale = document.querySelector("#modale");
 const btnFermerModale = document.querySelector(".fermer-modale");
 const vueGalerie = document.querySelector(".vue-galerie");
 const vueFormulaire = document.querySelector(".vue-formulaire");
-const btnAjouterPhoto = document.querySelector(".btn-ajouter-photo");
-const btnRetour = document.querySelector(".btn-retour");
 
 // ---------- DOM : MODALE, GALERIE (SUPPRESSION) ----------
 const modaleGalerie = document.querySelector(".modale-galerie");
-const messageErreurSuppression = document.querySelector(".message-erreur-suppression");
 
 // ---------- DOM : MODALE, UPLOAD IMAGE ----------
 const btnChoisirPhoto = document.querySelector(".btn-choisir-photo");
@@ -35,7 +29,6 @@ const messageErreurImage = document.querySelector(".message-erreur-image");
 // ---------- DOM : MODALE, FORMULAIRE D'AJOUT ----------
 const inputTitre = document.getElementById("titre");
 const select = document.getElementById("categorie");
-const btnValider = document.getElementById("btn-valider");
 const formAjoutPhoto = document.getElementById("form-ajout-photo");
 const messageErreurAPI = document.querySelector(".message-erreur-api");
 
@@ -44,6 +37,9 @@ function afficherGalerie(projetsAAfficher) {
     galerie.innerHTML = ""
     projetsAAfficher.forEach((projet) => {
         const figureProjet = document.createElement("figure");
+        // `categoryId` existe sur les projets récupérés et sur ceux nouvellement ajoutés.
+        figureProjet.dataset.categoryId = String(projet.categoryId);
+        figureProjet.dataset.projectId = projet.id;
 
         const imgProjet = document.createElement("img");
         imgProjet.src = projet.imageUrl;
@@ -61,7 +57,8 @@ function afficherGalerie(projetsAAfficher) {
 }
 
 function afficherGalerieModale(projetsAAfficher) {
-    modaleGalerie.innerHTML = ""
+    modaleGalerie.innerHTML = "";
+
     projetsAAfficher.forEach((projet) => {
         const figureProjet = document.createElement("figure");
 
@@ -70,21 +67,16 @@ function afficherGalerieModale(projetsAAfficher) {
         imgProjet.alt = projet.title;
 
         const btnSupprimer = document.createElement("button");
-        btnSupprimer.innerHTML = `<img src="./assets/icons/supprimer.svg" alt="Supprimer" width="9" height="11">`;
+        btnSupprimer.dataset.projectId = String(projet.id);
+        btnSupprimer.innerHTML = `
+            <img
+                src="./assets/icons/supprimer.svg"
+                alt="Supprimer"
+                width="9"
+                height="11"
+            >
+        `;
         btnSupprimer.classList.add("btn-supprimer");
-        btnSupprimer.addEventListener("click", async (event) => {
-            event.preventDefault();
-            const reponse = await supprimerProjet(projet.id);
-            if (reponse.ok) {
-                figureProjet.remove();
-                projets = projets.filter((p) => p.id !== projet.id);
-                afficherGalerie(projets);
-                messageErreurSuppression.style.visibility = "hidden";
-            } else {
-                messageErreurSuppression.textContent = "Une erreur est survenue, veuillez réessayer.";
-                messageErreurSuppression.style.visibility = "visible";
-            }
-        });
 
         figureProjet.appendChild(imgProjet);
         figureProjet.appendChild(btnSupprimer);
@@ -92,6 +84,29 @@ function afficherGalerieModale(projetsAAfficher) {
         modaleGalerie.appendChild(figureProjet);
     });
 }
+modaleGalerie.addEventListener("click", async (event) => {
+    const btnSupprimer = event.target.closest(".btn-supprimer");
+    if (!btnSupprimer) {
+        return;
+    }
+    const messageErreurSuppression = document.querySelector(
+        ".message-erreur-suppression"
+    );
+    const idProjet = Number(btnSupprimer.dataset.projectId);
+    const reponse = await supprimerProjet(idProjet);
+    if (reponse.ok) {
+        projets = projets.filter((projet) => {
+            return projet.id !== idProjet;
+        });
+        afficherGalerie(projets);
+        afficherGalerieModale(projets);
+        messageErreurSuppression.style.visibility = "hidden";
+    } else {
+        messageErreurSuppression.textContent =
+            "Une erreur est survenue, veuillez réessayer.";
+        messageErreurSuppression.style.visibility = "visible";
+    }
+});
 
 // ---------- FILTRES : HELPER ----------
 function changerBoutonActif(bouton) {
@@ -103,7 +118,9 @@ function changerBoutonActif(bouton) {
 }
 
 // ---------- MODE ÉDITION ----------
-if (token) {
+if (localStorage.getItem("token")) {
+    const lienConnexion = document.querySelector(".lien-connexion");
+    const modeEdition = document.querySelector(".mode-edition");
     modeEdition.style.display = "flex";
     btnModifier.style.display = "flex";
     filtres.style.display = "none";
@@ -122,6 +139,7 @@ function verifierFormulaire() {
     const titre = inputTitre.value;
     const categorie = select.value;
     const image = inputFichier.files[0];
+    const btnValider = document.getElementById("btn-valider");
 
     const estValide = titre.trim() !== "" && categorie !== "" && image !== undefined;
 
@@ -153,18 +171,6 @@ if (window.location.hash) {
     document.querySelector(window.location.hash)?.scrollIntoView();
 }
 
-// ---------- FILTRES ----------
-// Bouton "Tous"
-const buttonFiltreTous = document.createElement("button");
-buttonFiltreTous.innerText = "Tous";
-buttonFiltreTous.classList.add("actif");
-filtres.appendChild(buttonFiltreTous);
-
-buttonFiltreTous.addEventListener("click", () => {
-    changerBoutonActif(buttonFiltreTous);
-    afficherGalerie(projets);
-});
-
 // Placeholder
 const optionPlaceholder = document.createElement("option");
 optionPlaceholder.value = "";
@@ -175,25 +181,47 @@ optionPlaceholder.setAttribute("selected", "");
 
 select.appendChild(optionPlaceholder);
 
-// Categories
-categories.forEach((categorie) => {
+
+// ---------- FILTRES ----------
+const filtresDisponibles = [
+    { id: "all", name: "Tous" },
+    ...categories,
+];
+
+filtresDisponibles.forEach((categorie) => {
     const buttonFiltre = document.createElement("button");
-    const option = document.createElement("option");
 
     buttonFiltre.innerText = categorie.name;
-    filtres.appendChild(buttonFiltre);
+    buttonFiltre.dataset.categoryId = String(categorie.id);
 
-    option.value = categorie.id;
-    option.textContent = categorie.name;
-    select.appendChild(option);
+    if (categorie.id === "all") {
+        buttonFiltre.classList.add("actif");
+    }
 
     buttonFiltre.addEventListener("click", () => {
         changerBoutonActif(buttonFiltre);
-        const filtreCategorie = projets.filter(
-            (projet) => projet.categoryId === categorie.id
-        );
-        afficherGalerie(filtreCategorie);
+
+        const categorieId = buttonFiltre.dataset.categoryId;
+        galerie.querySelectorAll("figure").forEach((figure) => {
+            // Affiche/masque les projets selon le filtre sélectionné
+            figure.hidden =
+                // "Tous" n'est jamais masqué par une catégorie
+                categorieId !== "all" &&
+                // Sinon, masque seulement les projets d'une autre catégorie
+                figure.dataset.categoryId !== categorieId;
+        });
     });
+
+    filtres.appendChild(buttonFiltre);
+
+    if (categorie.id !== "all") {
+        const option = document.createElement("option");
+
+        option.value = categorie.id;
+        option.textContent = categorie.name;
+
+        select.appendChild(option);
+    }
 });
 
 // ---------- MODALE : OUVERTURE / FERMETURE ----------
@@ -256,16 +284,20 @@ modale.addEventListener("keydown", (event) => {
     }
 });
 
-btnAjouterPhoto.addEventListener("click", () => {
-    vueGalerie.style.display = "none";
-    vueFormulaire.style.display = "flex";
-});
+document
+    .querySelector(".btn-ajouter-photo")
+    .addEventListener("click", () => {
+        vueGalerie.style.display = "none";
+        vueFormulaire.style.display = "flex";
+    });
 
-btnRetour.addEventListener("click", () => {
-    reinitialiserFormulaireAjout();
-    vueFormulaire.style.display = "none";
-    vueGalerie.style.display = "block";
-});
+document
+    .querySelector(".btn-retour")
+    .addEventListener("click", () => {
+        reinitialiserFormulaireAjout();
+        vueFormulaire.style.display = "none";
+        vueGalerie.style.display = "block";
+    });
 
 // ---------- MODALE : UPLOAD IMAGE ----------
 btnChoisirPhoto.addEventListener("click", () => {
