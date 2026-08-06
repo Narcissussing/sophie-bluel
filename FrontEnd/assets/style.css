@@ -346,6 +346,10 @@ li:hover {
   margin-bottom: 5.7rem;
 }
 
+.galerie figure[hidden] {
+  display: none;
+}
+
 .galerie img {
   width: 100%;
   object-fit: cover;
