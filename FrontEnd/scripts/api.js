@@ -37,20 +37,33 @@ export async function seConnecter(email, motDePasse) {
   }
 }
 
+export function tokenEstValide() {
+  const token = localStorage.getItem("token");
+  if (!token) return false;
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    return payload.exp * 1000 > Date.now();
+  } catch {
+    return false;
+  }
+}
+
 export async function supprimerProjet(id) {
+  if (!tokenEstValide()) return { ok: false, status: 401 };
   const token = localStorage.getItem("token");
   try {
     const reponse = await fetch(`http://localhost:5678/api/works/${id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     });
-    return { ok: reponse.ok };
+    return { ok: reponse.ok, status: reponse.status };
   } catch (erreur) {
-    return { ok: false };
+    return { ok: false, status: null };
   }
 }
 
 export async function ajouterProjet(donnees) {
+  if (!tokenEstValide()) return { ok: false, status: 401 };
   const token = localStorage.getItem("token");
   try {
     const reponse = await fetch("http://localhost:5678/api/works", {
@@ -59,8 +72,8 @@ export async function ajouterProjet(donnees) {
       body: donnees,
     });
     const nouveauProjet = await reponse.json();
-    return { ok: reponse.ok, nouveauProjet };
+    return { ok: reponse.ok, nouveauProjet, status: reponse.status };
   } catch (erreur) {
-    return { ok: false, nouveauProjet: null };
+    return { ok: false, nouveauProjet: null, status: null };
   }
 }

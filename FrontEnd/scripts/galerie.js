@@ -1,4 +1,4 @@
-import { obtenirProjets, obtenirCategories, supprimerProjet, ajouterProjet } from './api.js';
+import { obtenirProjets, obtenirCategories, tokenEstValide, supprimerProjet, ajouterProjet } from './api.js';
 
 // ---------- DONNÉES ----------
 let projets = await obtenirProjets();
@@ -85,6 +85,7 @@ function afficherGalerieModale(projetsAAfficher) {
     });
 }
 modaleGalerie.addEventListener("click", async (event) => {
+    event.preventDefault();
     const btnSupprimer = event.target.closest(".btn-supprimer");
     if (!btnSupprimer) {
         return;
@@ -94,6 +95,11 @@ modaleGalerie.addEventListener("click", async (event) => {
     );
     const idProjet = Number(btnSupprimer.dataset.projectId);
     const reponse = await supprimerProjet(idProjet);
+    if (reponse.status === 401) {
+        localStorage.removeItem("token");
+        window.location.href = "index.html";
+        return;
+    }
     if (reponse.ok) {
         projets = projets.filter((projet) => {
             return projet.id !== idProjet;
@@ -118,7 +124,7 @@ function changerBoutonActif(bouton) {
 }
 
 // ---------- MODE ÉDITION ----------
-if (localStorage.getItem("token")) {
+if (tokenEstValide()) {
     const lienConnexion = document.querySelector(".lien-connexion");
     const modeEdition = document.querySelector(".mode-edition");
     modeEdition.style.display = "flex";
@@ -347,7 +353,13 @@ formAjoutPhoto.addEventListener("submit", async (event) => {
     donnees.append("image", image);
     donnees.append("category", categorie);
 
-    const { ok, nouveauProjet } = await ajouterProjet(donnees);
+    const { ok, status, nouveauProjet } = await ajouterProjet(donnees);
+
+    if (status === 401) {
+        localStorage.removeItem("token");
+        window.location.href = "index.html";
+        return;
+    }
 
     if (ok) {
         projets.push(nouveauProjet);
