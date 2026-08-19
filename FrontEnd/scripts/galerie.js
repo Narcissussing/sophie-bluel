@@ -15,9 +15,6 @@ const btnFermerModale = document.querySelector(".fermer-modale");
 const vueGalerie = document.querySelector(".vue-galerie");
 const vueFormulaire = document.querySelector(".vue-formulaire");
 
-// ---------- DOM : MODALE, GALERIE (SUPPRESSION) ----------
-const modaleGalerie = document.querySelector(".modale-galerie");
-
 // ---------- DOM : MODALE, UPLOAD IMAGE ----------
 const btnChoisirPhoto = document.querySelector(".btn-choisir-photo");
 const inputFichier = document.getElementById("inputFichier");
@@ -37,7 +34,6 @@ function afficherGalerie(projetsAAfficher) {
     galerie.innerHTML = ""
     projetsAAfficher.forEach((projet) => {
         const figureProjet = document.createElement("figure");
-        // `categoryId` existe sur les projets récupérés et sur ceux nouvellement ajoutés.
         figureProjet.dataset.categoryId = String(projet.categoryId);
         figureProjet.dataset.projectId = projet.id;
 
@@ -51,11 +47,11 @@ function afficherGalerie(projetsAAfficher) {
         figureProjet.appendChild(imgProjet);
         figureProjet.appendChild(titreProjet);
 
-        // Ajouter figure dans la section principale
         galerie.appendChild(figureProjet);
     });
 }
 
+const modaleGalerie = document.querySelector(".modale-galerie");
 function afficherGalerieModale(projetsAAfficher) {
     modaleGalerie.innerHTML = "";
 
@@ -177,7 +173,6 @@ if (window.location.hash) {
     document.querySelector(window.location.hash)?.scrollIntoView();
 }
 
-// Placeholder
 const optionPlaceholder = document.createElement("option");
 optionPlaceholder.value = "";
 optionPlaceholder.textContent = "";
@@ -196,7 +191,6 @@ const filtresDisponibles = [
 
 filtresDisponibles.forEach((categorie) => {
     const buttonFiltre = document.createElement("button");
-
     buttonFiltre.innerText = categorie.name;
     buttonFiltre.dataset.categoryId = String(categorie.id);
 
@@ -209,11 +203,8 @@ filtresDisponibles.forEach((categorie) => {
 
         const categorieId = buttonFiltre.dataset.categoryId;
         galerie.querySelectorAll("figure").forEach((figure) => {
-            // Affiche/masque les projets selon le filtre sélectionné
             figure.hidden =
-                // "Tous" n'est jamais masqué par une catégorie
                 categorieId !== "all" &&
-                // Sinon, masque seulement les projets d'une autre catégorie
                 figure.dataset.categoryId !== categorieId;
         });
     });
@@ -222,7 +213,6 @@ filtresDisponibles.forEach((categorie) => {
 
     if (categorie.id !== "all") {
         const option = document.createElement("option");
-
         option.value = categorie.id;
         option.textContent = categorie.name;
 
@@ -231,14 +221,13 @@ filtresDisponibles.forEach((categorie) => {
 });
 
 // ---------- MODALE : OUVERTURE / FERMETURE ----------
-// Contenu de la page masqué aux lecteurs d'écran tant que la modale est ouverte
 const contenuPrincipal = document.querySelectorAll("header, main > section, footer");
 
 function ouvrirModale() {
     modale.style.display = "flex";
     vueGalerie.style.display = "block";
     vueFormulaire.style.display = "none";
-    contenuPrincipal.forEach((element) => element.setAttribute("inert", "")); //Masque le contenu principal
+    contenuPrincipal.forEach((element) => element.setAttribute("inert", ""));
     btnFermerModale.focus();
 }
 
@@ -247,7 +236,7 @@ function fermerModale() {
     reinitialiserFormulaireAjout();
     vueFormulaire.style.display = "none";
     vueGalerie.style.display = "block";
-    contenuPrincipal.forEach((element) => element.removeAttribute("inert")); //Reactive le contenu principal
+    contenuPrincipal.forEach((element) => element.removeAttribute("inert"));
     btnModifier.focus();
 }
 
@@ -268,7 +257,7 @@ document.addEventListener("keydown", (event) => {
     }
 });
 
-// Piège à focus : le Tab reste à l'intérieur de la modale
+// Piège à focus
 modale.addEventListener("keydown", (event) => {
     if (event.key !== "Tab") {
         return;
@@ -312,8 +301,6 @@ btnChoisirPhoto.addEventListener("click", () => {
 
 inputFichier.addEventListener("change", (event) => {
     const image = event.target.files[0];
-
-    // Annulation du sélecteur de fichier : aucune image choisie
     if (!image) {
         return;
     }
